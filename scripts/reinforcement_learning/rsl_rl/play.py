@@ -84,13 +84,26 @@ from isaaclab.managers import ObservationTermCfg as ObsTerm
 from isaaclab.utils.assets import retrieve_file_path
 from isaaclab.utils.dict import print_dict
 
-from isaaclab_rl.rsl_rl import (
-    RslRlBaseRunnerCfg,
-    RslRlVecEnvWrapper,
-    export_policy_as_jit,
-    export_policy_as_onnx,
-    handle_deprecated_rsl_rl_cfg,
-)
+try:  # IsaacLab (main) provides this compatibility helper
+    from isaaclab_rl.rsl_rl import (
+        RslRlBaseRunnerCfg,
+        RslRlVecEnvWrapper,
+        export_policy_as_jit,
+        export_policy_as_onnx,
+        handle_deprecated_rsl_rl_cfg,
+    )
+except ImportError:  # IsaacLab <= v2.3.2 does not provide it
+    from isaaclab_rl.rsl_rl import (
+        RslRlBaseRunnerCfg,
+        RslRlVecEnvWrapper,
+        export_policy_as_jit,
+        export_policy_as_onnx,
+    )
+
+    def handle_deprecated_rsl_rl_cfg(agent_cfg, installed_version):
+        """Fallback for IsaacLab versions that do not ship the deprecated-config helper."""
+        return agent_cfg
+
 from isaaclab_rl.utils.pretrained_checkpoint import get_published_pretrained_checkpoint
 
 from isaaclab_tasks.utils import get_checkpoint_path
