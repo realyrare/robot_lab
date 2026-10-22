@@ -92,7 +92,9 @@ class DeeproboticsM20RoughEnvCfg(LocomotionVelocityRoughEnvCfg):
         self.observations.policy.joint_pos.scale = 1.0
         self.observations.policy.joint_vel.scale = 0.05
         self.observations.policy.base_lin_vel = None
-        self.observations.policy.height_scan = None
+        # self.observations.policy.height_scan = None
+        # [已开启] 让策略能"看到"地形起伏（原为 None，导致 rough 盲跑）
+        self.observations.policy.height_scan.scale = 1.0
         self.observations.policy.joint_pos.params["asset_cfg"].joint_names = self.joint_names
         self.observations.policy.joint_vel.params["asset_cfg"].joint_names = self.joint_names
 
@@ -219,8 +221,9 @@ class DeeproboticsM20RoughEnvCfg(LocomotionVelocityRoughEnvCfg):
             self.disable_zero_weight_rewards()
 
         # ------------------------------Terminations------------------------------
-        # self.terminations.illegal_contact.params["sensor_cfg"].body_names = [self.base_link_name]
-        self.terminations.illegal_contact = None
+        # [已开启] 摔倒终止：base_link 接触力超阈值即判定摔倒并结束回合
+        self.terminations.illegal_contact.params["sensor_cfg"].body_names = [self.base_link_name]
+        self.terminations.illegal_contact.params["threshold"] = 1.0
 
         # ------------------------------Curriculums------------------------------
         # self.curriculum.command_levels_lin_vel.params["range_multiplier"] = (0.2, 1.0)
